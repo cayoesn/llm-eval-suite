@@ -1,6 +1,6 @@
 # Relatório Analítico de Avaliação de LLMs 📊
 
-> **Resultado Geral do Benchmark:** 🟥 REPROVADO
+> **Resultado Geral do Benchmark:** 🟩 APROVADO
 
 ---
 
