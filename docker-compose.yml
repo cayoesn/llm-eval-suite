@@ -1,11 +1,68 @@
 version: '3.8'
 
 services:
-  eval-suite:
-    build: .
+  eval-suite-postgres:
+    image: postgres:15-alpine
+    container_name: eval_suite_postgres
     environment:
-      - LANGFUSE_PUBLIC_KEY=pk-lf-demo
-      - LANGFUSE_SECRET_KEY=sk-lf-demo
-      - LANGFUSE_HOST=http://localhost:3000
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: evalsuitepassword
+      POSTGRES_DB: eval_suite_db
+    ports:
+      - "5437:5432"
     volumes:
-      - ./reports:/app/reports
+      - eval_suite_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eval_suite_network
+
+  eval-suite-langfuse:
+    image: langfuse/langfuse:2
+    container_name: eval_suite_langfuse
+    depends_on:
+      eval-suite-postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://postgres:evalsuitepassword@eval-suite-postgres:5432/eval_suite_db
+      - NEXTAUTH_SECRET=evalsuitesecret
+      - NEXTAUTH_URL=http://localhost:3006
+      - SALT=evalsuitesalt
+      - ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000
+      - TELEMETRY_ENABLED=false
+      - LANGFUSE_INIT_USER_EMAIL=admin@evalsuite.com
+      - LANGFUSE_INIT_USER_PASSWORD=adminpassword123
+      - LANGFUSE_INIT_ORG_ID=evalsuite-org
+      - LANGFUSE_INIT_ORG_NAME=EvalSuite Org
+      - LANGFUSE_INIT_PROJECT_ID=evalsuite-project
+      - LANGFUSE_INIT_PROJECT_NAME=EvalSuite Project
+      - LANGFUSE_INIT_PROJECT_PUBLIC_KEY=pk-lf-evalsuite
+      - LANGFUSE_INIT_PROJECT_SECRET_KEY=sk-lf-evalsuite
+      - LANGFUSE_DISABLE_SIGNUP=true
+    ports:
+      - "3006:3000"
+    networks:
+      - eval_suite_network
+
+  eval-suite-app:
+    build: .
+    container_name: eval_suite_app
+    environment:
+      - ENV=production
+      - LANGFUSE_PUBLIC_KEY=pk-lf-evalsuite
+      - LANGFUSE_SECRET_KEY=sk-lf-evalsuite
+      - LANGFUSE_HOST=http://eval-suite-langfuse:3000
+    depends_on:
+      - eval-suite-langfuse
+    networks:
+      - eval_suite_network
+
+networks:
+  eval_suite_network:
+    driver: bridge
+
+volumes:
+  eval_suite_postgres_data:
