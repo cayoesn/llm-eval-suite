@@ -1,0 +1,21 @@
+[project]
+name = "llm-eval-suite"
+version = "1.0.0"
+description = "Offline LLM Evaluation Suite with G-Eval (LLM-as-a-Judge), Ragas Metrics, and Langfuse Score Tracing"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "langfuse>=2.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

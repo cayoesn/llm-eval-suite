@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  eval-suite:
+    build: .
+    environment:
+      - LANGFUSE_PUBLIC_KEY=pk-lf-demo
+      - LANGFUSE_SECRET_KEY=sk-lf-demo
+      - LANGFUSE_HOST=http://localhost:3000
+    volumes:
+      - ./reports:/app/reports
