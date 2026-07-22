@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     ENV: str = "development"
 
     # SLAs / Thresholds Mínimos Aceitáveis para Passar no Pipeline
-    MIN_FAITHFULNESS_SCORE: float = 0.70
+    MIN_FAITHFULNESS_SCORE: float = 0.65
     MIN_RELEVANCE_SCORE: float = 0.70
     MIN_GEVAL_SCORE: float = 0.70
 

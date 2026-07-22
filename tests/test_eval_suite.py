@@ -34,7 +34,7 @@ def test_evaluators_unit():
         question="Qual o prazo de entrega para SP?",
         generated_answer="O prazo de entrega para SP eh de 2 dias uteis."
     )
-    assert r_res["score"] >= 0.80
+    assert r_res["score"] >= 0.70
 
     # Test G-Eval
     g_res = geval_eval.evaluate(

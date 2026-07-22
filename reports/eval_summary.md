@@ -8,8 +8,8 @@
 
 | Métrica | Média Obtida | SLA Mínimo | Status |
 | :--- | :---: | :---: | :---: |
-| **Faithfulness (Fidedignidade)** | `0.63` | `0.80` | ❌ FAIL |
-| **Answer Relevance (Relevância)** | `0.73` | `0.80` | ❌ FAIL |
+| **Faithfulness (Fidedignidade)** | `0.68` | `0.80` | ❌ FAIL |
+| **Answer Relevance (Relevância)** | `0.78` | `0.80` | ❌ FAIL |
 | **G-Eval (LLM-as-a-Judge)** | `0.86` | `0.75` | ✅ PASS |
 
 ---
@@ -22,8 +22,8 @@
 - **Resposta Gerada:** *"Para o Rio de Janeiro, o prazo de entrega padrao eh de 2 a 4 dias uteis, com opcao de entrega expressa em ate 24 horas."*
 - **Ground Truth:** *"O prazo padrao para o Rio de Janeiro eh de 2 a 4 dias uteis, podendo ser entregue em ate 24 horas via entrega expressa."*
 - **Pontuações:**
-  - Faithfulness: `0.69`
-  - Relevance: `0.97`
+  - Faithfulness: `0.78`
+  - Relevance: `0.86`
   - G-Eval Score: `0.91`
 
 ---
@@ -33,8 +33,8 @@
 - **Resposta Gerada:** *"Para reiniciar seu roteador com seguranca, remova a fonte de energia da tomada, aguarde 30 segundos e conecte novamente."*
 - **Ground Truth:** *"Desconecte o cabo de energia da tomada, espere 30 segundos e ligue-o novamente."*
 - **Pontuações:**
-  - Faithfulness: `0.5`
-  - Relevance: `0.62`
+  - Faithfulness: `0.55`
+  - Relevance: `0.77`
   - G-Eval Score: `0.83`
 
 ---
@@ -44,8 +44,8 @@
 - **Resposta Gerada:** *"Se voce cancelar o plano anual antes de 12 meses, havera uma taxa administrativa de 10% cobrada sobre o saldo restante do contrato."*
 - **Ground Truth:** *"A taxa de cancelamento antecipado eh de 10% calculada sobre o valor dos meses restantes do contrato."*
 - **Pontuações:**
-  - Faithfulness: `0.67`
-  - Relevance: `0.57`
+  - Faithfulness: `0.75`
+  - Relevance: `0.65`
   - G-Eval Score: `0.78`
 
 ---
@@ -55,8 +55,8 @@
 - **Resposta Gerada:** *"Sim! Aceitamos pagamento via Pix com aprovacao instantanea na hora."*
 - **Ground Truth:** *"Sim, aceitamos Pix com aprovacao imediata."*
 - **Pontuações:**
-  - Faithfulness: `0.67`
-  - Relevance: `0.78`
+  - Faithfulness: `0.62`
+  - Relevance: `0.82`
   - G-Eval Score: `0.91`
 
 ---
