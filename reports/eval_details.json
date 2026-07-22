@@ -1,0 +1,46 @@
+[
+  {
+    "id": "tc_001",
+    "domain": "E-commerce",
+    "question": "Qual eh o prazo de entrega para o Rio de Janeiro?",
+    "context": "Entregas para a regiao Sudeste (SP, RJ, MG, ES) possuem prazo padrao de 2 a 4 dias uteis. Para capitais, a entrega expressa ocorre em ate 24 horas.",
+    "ground_truth": "O prazo padrao para o Rio de Janeiro eh de 2 a 4 dias uteis, podendo ser entregue em ate 24 horas via entrega expressa.",
+    "generated_answer": "Para o Rio de Janeiro, o prazo de entrega padrao eh de 2 a 4 dias uteis, com opcao de entrega expressa em ate 24 horas.",
+    "faithfulness_score": 0.69,
+    "relevance_score": 0.97,
+    "geval_score": 0.91
+  },
+  {
+    "id": "tc_002",
+    "domain": "Suporte Tecnico",
+    "question": "Como reiniciar o roteador Wi-Fi de forma segura?",
+    "context": "Para reiniciar o roteador, desligue o cabo de energia da tomada, aguarde 30 segundos para a desenergizacao completa dos capacitores e reconecte o cabo.",
+    "ground_truth": "Desconecte o cabo de energia da tomada, espere 30 segundos e ligue-o novamente.",
+    "generated_answer": "Para reiniciar seu roteador com seguranca, remova a fonte de energia da tomada, aguarde 30 segundos e conecte novamente.",
+    "faithfulness_score": 0.5,
+    "relevance_score": 0.62,
+    "geval_score": 0.83
+  },
+  {
+    "id": "tc_003",
+    "domain": "Financeiro",
+    "question": "Quais sao as taxas de cancelamento do plano anual?",
+    "context": "O cancelamento do plano anual antes do término de 12 meses implica taxa administrativa de 10% sobre o saldo devedor restante do contrato.",
+    "ground_truth": "A taxa de cancelamento antecipado eh de 10% calculada sobre o valor dos meses restantes do contrato.",
+    "generated_answer": "Se voce cancelar o plano anual antes de 12 meses, havera uma taxa administrativa de 10% cobrada sobre o saldo restante do contrato.",
+    "faithfulness_score": 0.67,
+    "relevance_score": 0.57,
+    "geval_score": 0.78
+  },
+  {
+    "id": "tc_004",
+    "domain": "Atendimento",
+    "question": "Voces aceitam pagamento via Pix?",
+    "context": "Aceitamos pagamentos via Pix com aprovacao instantanea, cartao de credito em ate 12x e boleto bancario.",
+    "ground_truth": "Sim, aceitamos Pix com aprovacao imediata.",
+    "generated_answer": "Sim! Aceitamos pagamento via Pix com aprovacao instantanea na hora.",
+    "faithfulness_score": 0.67,
+    "relevance_score": 0.78,
+    "geval_score": 0.91
+  }
+]

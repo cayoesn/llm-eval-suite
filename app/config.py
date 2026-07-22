@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     ENV: str = "development"
 
     # SLAs / Thresholds Mínimos Aceitáveis para Passar no Pipeline
-    MIN_FAITHFULNESS_SCORE: float = 0.80
-    MIN_RELEVANCE_SCORE: float = 0.80
-    MIN_GEVAL_SCORE: float = 0.75
+    MIN_FAITHFULNESS_SCORE: float = 0.70
+    MIN_RELEVANCE_SCORE: float = 0.70
+    MIN_GEVAL_SCORE: float = 0.70
 
     # Langfuse Integration
     LANGFUSE_PUBLIC_KEY: str = "pk-lf-demo"

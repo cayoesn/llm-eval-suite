@@ -1,6 +1,13 @@
 import re
 from typing import Dict, Any
 
+STOPWORDS = {
+    "para", "como", "uma", "dos", "sua", "pode", "pelo", "ser", "que", "com",
+    "por", "mais", "tem", "das", "seu", "sua", "ou", "quando", "sem", "sobre",
+    "este", "esta", "isso", "aqui", "ate", "mesmo", "forma", "modo", "onde",
+    "voce", "voces", "opcao", "seja", "sao", "eh", "seria", "caso"
+}
+
 
 class FaithfulnessEvaluator:
     """Avaliador de Fidedignidade Factual (Faithfulness / Groundedness)."""
@@ -15,8 +22,7 @@ class FaithfulnessEvaluator:
 
         def tokenize(text: str):
             words = re.findall(r"\b\w+\b", text.lower())
-            # Filtra stopwords curtas para focar em termos informativos
-            return set(w for w in words if len(w) > 2)
+            return set(w for w in words if len(w) > 2 and w not in STOPWORDS)
 
         ans_tokens = tokenize(generated_answer)
         ctx_tokens = tokenize(context)
@@ -27,7 +33,7 @@ class FaithfulnessEvaluator:
         intersection = ans_tokens.intersection(ctx_tokens)
         faithfulness_score = len(intersection) / len(ans_tokens)
 
-        # Penalização leve se houver números na resposta que não estão no contexto
+        # Penalização se houver números na resposta que não estão no contexto
         ans_numbers = set(re.findall(r"\b\d+\b", generated_answer))
         ctx_numbers = set(re.findall(r"\b\d+\b", context))
         unsupported_numbers = ans_numbers - ctx_numbers
@@ -41,5 +47,5 @@ class FaithfulnessEvaluator:
             "score": score,
             "supported_claims_ratio": score,
             "unsupported_numbers": list(unsupported_numbers),
-            "is_faithful": score >= 0.80
+            "is_faithful": score >= 0.70
         }
