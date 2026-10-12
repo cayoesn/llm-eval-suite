@@ -1,9 +1,9 @@
 import re
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class GEvalEvaluator:
-    """Avaliador G-Eval (LLM-as-a-Judge com Rúbricas Estruturadas)."""
+    """Avaliador G-Eval (LLM-as-a-Judge com Rúbricas Estruturadas & Consistência Inter-Juízes)."""
 
     RUBRICS = {
         "correctness": "A resposta contem informacoes corretas em comparacao ao Ground Truth?",
@@ -59,3 +59,38 @@ class GEvalEvaluator:
             },
             "is_approved": final_score >= 0.75
         }
+
+    @staticmethod
+    def calculate_cohens_kappa(judge_a_decisions: List[bool], judge_b_decisions: List[bool]) -> float:
+        """
+        Calcula o coeficiente de concordância estatística Cohen's Kappa entre dois juízes LLM:
+            kappa = (P_o - P_e) / (1 - P_e)
+        Onde P_o é a concordância observada e P_e é a concordância esperada por chance.
+        """
+        if len(judge_a_decisions) != len(judge_b_decisions) or not judge_a_decisions:
+            raise ValueError("As listas de decisões dos juízes devem ter o mesmo tamanho e não ser vazias.")
+
+        n = len(judge_a_decisions)
+        # Tabela de contingência 2x2
+        # a: both True, b: A True / B False, c: A False / B True, d: both False
+        a = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if x and y)
+        b = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if x and not y)
+        c = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if not x and y)
+        d = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if not x and not y)
+
+        # Proporção observada
+        p_o = (a + d) / n
+
+        # Probabilidade marginal esperada
+        p_a_true = (a + b) / n
+        p_b_true = (a + c) / n
+        p_a_false = (c + d) / n
+        p_b_false = (b + d) / n
+
+        p_e = (p_a_true * p_b_true) + (p_a_false * p_b_false)
+
+        if p_e == 1.0:
+            return 1.0  # Concordância perfeita trivial
+
+        kappa = (p_o - p_e) / (1.0 - p_e)
+        return round(kappa, 4)
