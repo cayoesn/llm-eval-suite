@@ -14,9 +14,9 @@ class RagasMetricsResult(BaseModel):
 
 class RagasDeepEvalEngine:
     """Enterprise Ragas & DeepEval Metrics Engine.
-    
-    Avalia rigorosamente arquiteturas RAG e Agentes com métricas de
-    Fidelidade (Faithfulness), Relevância da Resposta e Precisão/Revogação de Contexto.
+
+    Rigorously evaluates RAG and Agent architectures across Faithfulness,
+    Answer Relevancy, Context Precision, and Context Recall metrics.
     """
 
     def evaluate_rag_triad(
@@ -45,22 +45,22 @@ class RagasDeepEvalEngine:
         ctx_text = " ".join(retrieved_contexts)
         ctx_words = word_set(ctx_text)
 
-        # 1. Faithfulness (Proporção das palavras da resposta contidas no contexto)
+        # 1. Faithfulness (Proportion of answer words grounded in the retrieved context)
         faithfulness = len(ans_words.intersection(ctx_words)) / max(1, len(ans_words))
 
-        # 2. Answer Relevancy (Alineamento da resposta com os termos da pergunta)
+        # 2. Answer Relevancy (Alignment of the answer with the question terms)
         answer_relevancy = len(ans_words.intersection(q_words)) / max(1, len(q_words)) if q_words else 1.0
 
-        # 3. Context Precision (Quanto do contexto recuperado foi útil para o Ground Truth)
+        # 3. Context Precision (Proportion of retrieved context useful for the Ground Truth)
         context_precision = len(ctx_words.intersection(gt_words)) / max(1, len(ctx_words)) if ctx_words else 1.0
 
-        # 4. Context Recall (Quanto do Ground Truth estava presente no contexto recuperado)
+        # 4. Context Recall (Proportion of Ground Truth present in the retrieved context)
         context_recall = len(ctx_words.intersection(gt_words)) / max(1, len(gt_words)) if gt_words else 1.0
 
         # 5. Hallucination Rate
         hallucination_rate = round(1.0 - faithfulness, 4)
 
-        # Overall Harmonic Score
+        # Overall Weighted Score
         overall = (faithfulness * 0.35) + (answer_relevancy * 0.35) + (context_precision * 0.15) + (context_recall * 0.15)
 
         return RagasMetricsResult(
@@ -73,5 +73,5 @@ class RagasDeepEvalEngine:
         )
 
 
-# Instância Singleton
+# Singleton instance
 ragas_engine = RagasDeepEvalEngine()

@@ -3,66 +3,69 @@ from typing import Dict, Any, List
 
 
 STOPWORDS = {
-    "para", "como", "uma", "dos", "sua", "pode", "pelo", "ser", "que", "com",
-    "por", "mais", "tem", "das", "seu", "sua", "ou", "quando", "sem", "sobre",
-    "este", "esta", "isso", "aqui", "ate", "mesmo", "forma", "modo", "onde",
-    "voce", "voces", "opcao", "seja", "sao", "eh", "seria", "caso"
+    "the", "and", "for", "with", "that", "this", "from", "are", "was", "were",
+    "will", "can", "could", "would", "should", "have", "has", "had", "not", "but",
+    "you", "your", "our", "its", "they", "their", "what", "when", "where", "how",
+    "which", "who", "all", "any", "into", "about", "than", "then", "also", "been",
+    "being", "may", "might", "must", "shall", "here", "there", "more", "most",
+    "some", "such", "only", "very", "just", "over", "under", "after", "before",
+    "between", "through", "during", "within", "without", "option", "case", "way"
 }
 
 CONVERSATIONAL_FILLERS = {
-    "com certeza", "aqui esta", "ola", "bom dia", "boa tarde", "com prazer",
-    "certamente", "segue a resposta", "espero ter ajudado"
+    "certainly", "here is", "hello", "good morning", "good afternoon",
+    "with pleasure", "of course", "here is the answer", "hope this helps"
 }
 
 
 class FaithfulnessEvaluator:
-    """Avaliador de Fidedignidade Factual (Faithfulness) com Decomposição Atômica de Claims."""
+    """Factual Faithfulness Evaluator with Atomic Claim Decomposition."""
 
     @staticmethod
     def decompose_claims(text: str) -> List[str]:
-        """Quebra a resposta gerada em declarações/claims atômicas unitárias."""
-        # Divide por pontuação final (. ? ! ou quebra de linha)
+        """Splits the generated answer into unitary atomic claims."""
+        # Split on terminal punctuation (. ? ! or newline)
         raw_sentences = re.split(r"[.!?\n]+", text)
         claims = []
         for s in raw_sentences:
             cleaned = s.strip()
-            # Ignora sentenças vazias, muito curtas ou meros cumprimentos conversacionais
+            # Ignore empty, overly short, or purely conversational filler sentences
             if len(cleaned) > 10 and not any(filler in cleaned.lower() for filler in CONVERSATIONAL_FILLERS):
                 claims.append(cleaned)
         return claims or ([text.strip()] if text.strip() else [])
 
     @staticmethod
     def _is_claim_supported(claim: str, context: str) -> bool:
-        """Verifica se um claim atômico específico tem respaldo semântico e numérico no contexto."""
+        """Checks whether a specific atomic claim has semantic and numerical support in the context."""
         claim_lower = claim.lower()
         context_lower = context.lower()
 
-        # 1. Checagem estrita de integridade numérica
+        # 1. Strict numerical integrity check
         claim_numbers = set(re.findall(r"\b\d+(?:[.,]\d+)?\b", claim_lower))
         ctx_numbers = set(re.findall(r"\b\d+(?:[.,]\d+)?\b", context_lower))
         if claim_numbers - ctx_numbers:
-            return False  # Alucinação de número inexistente no contexto
+            return False  # Hallucinated number not present in the context
 
-        # 2. Checagem de tokens informativos (substantivos / entidades)
+        # 2. Informative token check (nouns / entities)
         words = re.findall(r"\b\w+\b", claim_lower)
         informative_tokens = [w for w in words if len(w) > 2 and w not in STOPWORDS]
         if not informative_tokens:
             return True
 
-        # Pelo menos 60% dos termos informativos do claim devem estar presentes no contexto
+        # At least 60% of the claim's informative terms must appear in the context
         matching_tokens = [w for w in informative_tokens if w in context_lower]
         coverage = len(matching_tokens) / len(informative_tokens)
         return coverage >= 0.60
 
     def evaluate(self, generated_answer: str, context: str) -> Dict[str, Any]:
         """
-        Calcula a métrica de fidedignidade da resposta baseada na proporção de claims atômicos respaldados:
-            Faithfulness = (claims suportados) / (total de claims)
+        Computes the answer faithfulness metric based on the ratio of supported atomic claims:
+            Faithfulness = (supported claims) / (total claims)
         """
         if not context or not generated_answer:
             return {
                 "score": 0.0,
-                "reason": "Contexto ou resposta vazios",
+                "reason": "Empty context or answer",
                 "claims": [],
                 "supported_claims": [],
                 "unsupported_claims": [],
@@ -73,7 +76,7 @@ class FaithfulnessEvaluator:
         if not claims:
             return {
                 "score": 1.0,
-                "reason": "Sem claims informativos identificados",
+                "reason": "No informative claims identified",
                 "claims": [],
                 "supported_claims": [],
                 "unsupported_claims": [],

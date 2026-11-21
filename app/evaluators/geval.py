@@ -3,21 +3,21 @@ from typing import Dict, Any, List
 
 
 class GEvalEvaluator:
-    """Avaliador G-Eval (LLM-as-a-Judge com Rúbricas Estruturadas & Consistência Inter-Juízes)."""
+    """G-Eval Evaluator (LLM-as-a-Judge with Structured Rubrics & Inter-Judge Consistency)."""
 
     RUBRICS = {
-        "correctness": "A resposta contem informacoes corretas em comparacao ao Ground Truth?",
-        "clarity": "A resposta eh clara, bem estruturada e sem ambiguidades?",
-        "tone_consistency": "A resposta mantem tom profissional e cortes?",
-        "compliance": "A resposta cumpre os padroes de atencao ao cliente?"
+        "correctness": "Does the answer contain accurate information compared to the Ground Truth?",
+        "clarity": "Is the answer clear, well-structured, and unambiguous?",
+        "tone_consistency": "Does the answer maintain a professional and courteous tone?",
+        "compliance": "Does the answer comply with customer care standards?"
     }
 
     def evaluate(self, question: str, generated_answer: str, ground_truth: str) -> Dict[str, Any]:
         """
-        Executa avaliação estilo G-Eval avaliando a resposta frente ao Ground Truth.
+        Runs a G-Eval style assessment comparing the generated answer against the Ground Truth.
         """
         if not generated_answer:
-            return {"score": 0.0, "reason": "Resposta vazia"}
+            return {"score": 0.0, "reason": "Empty answer"}
 
         def word_set(text: str):
             return set(re.findall(r"\b\w+\b", text.lower()))
@@ -29,17 +29,17 @@ class GEvalEvaluator:
         intersection = ans_words.intersection(gt_words)
         correctness_score = len(intersection) / max(1, len(gt_words)) if gt_words else 1.0
 
-        # 2. Clarity Score (baseado em presença de pontuação e tamanho adequado)
+        # 2. Clarity Score (based on proper punctuation and sentence completion)
         clarity_score = 0.9 if "." in generated_answer or "!" in generated_answer else 0.7
 
-        # 3. Tone Consistency (ausência de palavras agressivas ou gírias extremas)
-        unprofessional_words = {"mano", "porra", "droga", "veio", "caralho"}
+        # 3. Tone Consistency (absence of aggressive language or unprofessional slang)
+        unprofessional_words = {"dude", "damn", "crap", "bro", "hell"}
         tone_score = 0.5 if ans_words.intersection(unprofessional_words) else 1.0
 
         # 4. Compliance Score
         compliance_score = 1.0
 
-        # Média ponderada G-Eval
+        # G-Eval weighted average
         weighted_score = (
             correctness_score * 0.4 +
             clarity_score * 0.2 +
@@ -63,25 +63,25 @@ class GEvalEvaluator:
     @staticmethod
     def calculate_cohens_kappa(judge_a_decisions: List[bool], judge_b_decisions: List[bool]) -> float:
         """
-        Calcula o coeficiente de concordância estatística Cohen's Kappa entre dois juízes LLM:
+        Computes Cohen's Kappa statistical agreement coefficient between two LLM judges:
             kappa = (P_o - P_e) / (1 - P_e)
-        Onde P_o é a concordância observada e P_e é a concordância esperada por chance.
+        Where P_o is observed agreement and P_e is expected agreement by chance.
         """
         if len(judge_a_decisions) != len(judge_b_decisions) or not judge_a_decisions:
-            raise ValueError("As listas de decisões dos juízes devem ter o mesmo tamanho e não ser vazias.")
+            raise ValueError("Judge decision lists must be non-empty and have the same length.")
 
         n = len(judge_a_decisions)
-        # Tabela de contingência 2x2
+        # 2x2 contingency table
         # a: both True, b: A True / B False, c: A False / B True, d: both False
         a = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if x and y)
         b = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if x and not y)
         c = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if not x and y)
         d = sum(1 for x, y in zip(judge_a_decisions, judge_b_decisions) if not x and not y)
 
-        # Proporção observada
+        # Observed agreement proportion
         p_o = (a + d) / n
 
-        # Probabilidade marginal esperada
+        # Expected marginal agreement probability
         p_a_true = (a + b) / n
         p_b_true = (a + c) / n
         p_a_false = (c + d) / n
@@ -90,7 +90,7 @@ class GEvalEvaluator:
         p_e = (p_a_true * p_b_true) + (p_a_false * p_b_false)
 
         if p_e == 1.0:
-            return 1.0  # Concordância perfeita trivial
+            return 1.0  # Trivial perfect agreement
 
         kappa = (p_o - p_e) / (1.0 - p_e)
         return round(kappa, 4)

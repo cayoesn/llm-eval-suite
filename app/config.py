@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Configurações Globais da Suíte de Avaliação LLM."""
+    """Global Configuration for the LLM Evaluation Suite."""
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "LLM Evaluation Suite"
     ENV: str = "development"
 
-    # SLAs / Thresholds Mínimos Aceitáveis para Passar no Pipeline
+    # SLAs / Minimum Acceptable Thresholds to Pass the Pipeline
     MIN_FAITHFULNESS_SCORE: float = 0.65
     MIN_RELEVANCE_SCORE: float = 0.70
     MIN_GEVAL_SCORE: float = 0.70

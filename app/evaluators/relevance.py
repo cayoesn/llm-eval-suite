@@ -2,22 +2,26 @@ import re
 from typing import Dict, Any
 
 STOPWORDS = {
-    "para", "como", "uma", "dos", "sua", "pode", "pelo", "ser", "que", "com",
-    "por", "mais", "tem", "das", "seu", "sua", "ou", "quando", "sem", "sobre",
-    "este", "esta", "isso", "aqui", "ate", "mesmo", "forma", "modo", "onde",
-    "voce", "voces", "opcao", "seja", "sao", "eh", "seria", "caso", "quais"
+    "the", "and", "for", "with", "that", "this", "from", "are", "was", "were",
+    "will", "can", "could", "would", "should", "have", "has", "had", "not", "but",
+    "you", "your", "our", "its", "they", "their", "what", "when", "where", "how",
+    "which", "who", "all", "any", "into", "about", "than", "then", "also", "been",
+    "being", "may", "might", "must", "shall", "here", "there", "more", "most",
+    "some", "such", "only", "very", "just", "over", "under", "after", "before",
+    "between", "through", "during", "within", "without", "option", "case", "way",
+    "does", "did"
 }
 
 
 class AnswerRelevanceEvaluator:
-    """Avaliador de Relevância e Direcionamento da Resposta em Relação à Pergunta."""
+    """Evaluator for Answer Relevance and Alignment with the Question."""
 
     def evaluate(self, question: str, generated_answer: str) -> Dict[str, Any]:
         """
-        Calcula a métrica de relevância da resposta em relação à pergunta.
+        Computes the relevance metric of the generated answer with respect to the question.
         """
         if not question or not generated_answer:
-            return {"score": 0.0, "reason": "Pergunta ou resposta vazia"}
+            return {"score": 0.0, "reason": "Empty question or answer"}
 
         def tokenize(text: str):
             words = re.findall(r"\b\w+\b", text.lower())
@@ -27,7 +31,7 @@ class AnswerRelevanceEvaluator:
         ans_tokens = tokenize(generated_answer)
 
         if not q_tokens:
-            return {"score": 1.0, "reason": "Pergunta sem palavras chave"}
+            return {"score": 1.0, "reason": "Question contains no informative keywords"}
 
         overlap = q_tokens.intersection(ans_tokens)
         overlap_score = len(overlap) / len(q_tokens) if q_tokens else 1.0

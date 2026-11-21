@@ -6,19 +6,19 @@ from app.evaluators.faithfulness import FaithfulnessEvaluator
 
 
 def test_synthetic_dataset_generator():
-    doc = "O StoreCore AI é um sistema de vendas. Ele possui suporte a RAG com Grafo de Conhecimento. A FSM de negociação garante descontos sem alucinação."
+    doc = "StoreCore AI is a sales intelligence platform. It supports RAG powered by a Knowledge Graph. The negotiation FSM enforces discount rules without hallucination."
     dataset = synthetic_generator.generate_from_raw_text(doc, num_samples=2)
-    
+
     assert len(dataset) == 2
     assert dataset[0].question is not None
     assert len(dataset[0].context) == 2
 
 
 def test_ragas_metrics_evaluation():
-    question = "Qual é o prazo de entrega do pedido?"
-    generated_answer = "O prazo de entrega do pedido é de 3 dias úteis."
-    retrieved_contexts = ["O prazo de entrega padrão para pedidos é de 3 dias úteis."]
-    ground_truth = "3 dias úteis"
+    question = "What is the order delivery timeframe?"
+    generated_answer = "The order delivery timeframe is 3 business days."
+    retrieved_contexts = ["The standard delivery timeframe for orders is 3 business days."]
+    ground_truth = "3 business days"
 
     metrics = ragas_engine.evaluate_rag_triad(
         question=question,
@@ -35,9 +35,9 @@ def test_ragas_metrics_evaluation():
 def test_geval_evaluator_rubrics():
     evaluator = GEvalEvaluator()
     res = evaluator.evaluate(
-        question="Qual o status do meu pedido?",
-        generated_answer="O seu pedido está em transporte e chega amanhã.",
-        ground_truth="Pedido em transporte com entrega amanhã.",
+        question="What is the status of my order?",
+        generated_answer="Your order is in transit and will arrive tomorrow.",
+        ground_truth="Order in transit arriving tomorrow.",
     )
 
     assert res["score"] > 0.5
@@ -46,20 +46,20 @@ def test_geval_evaluator_rubrics():
 
 
 def test_atomic_claim_decomposition_faithfulness():
-    """Valida a fidelidade factual decomposta em claims atômicos com alucinação controlada."""
+    """Validates factual faithfulness decomposed into atomic claims with controlled hallucination."""
     evaluator = FaithfulnessEvaluator()
     context = (
-        "O plano Enterprise custa 99 dólares por mês. "
-        "Ele inclui suporte 24 horas por dia e backup diário automático."
+        "The Enterprise plan costs 99 dollars per month. "
+        "It includes 24-hour support and automatic daily backups."
     )
-    # Resposta com 3 claims:
-    # 1. O plano Enterprise custa 99 dólares mensais (Suportado)
-    # 2. O plano inclui suporte 24 horas por dia (Suportado)
-    # 3. O plano oferece 100 terabytes de armazenamento gratuito (Alucinação total)
+    # Answer containing 3 claims:
+    # 1. The Enterprise plan costs 99 dollars per month (Supported)
+    # 2. The plan includes 24-hour support (Supported)
+    # 3. The plan offers 100 terabytes of free storage (Complete hallucination)
     answer = (
-        "O plano Enterprise custa 99 dólares mensais. "
-        "Ele inclui suporte 24 horas por dia. "
-        "Além disso, ele oferece 100 terabytes de armazenamento gratuito."
+        "The Enterprise plan costs 99 dollars per month. "
+        "It includes 24-hour support. "
+        "Additionally, it offers 100 terabytes of free storage."
     )
 
     res = evaluator.evaluate(answer, context)
@@ -72,17 +72,17 @@ def test_atomic_claim_decomposition_faithfulness():
 
 
 def test_geval_cohens_kappa_inter_judge_agreement():
-    """Valida o cálculo do coeficiente de concordância estatística Cohen's Kappa entre dois juízes LLM."""
+    """Validates Cohen's Kappa statistical agreement coefficient between two LLM judges."""
     evaluator = GEvalEvaluator()
 
-    # Cenário de alta concordância
+    # High agreement scenario
     judge_1 = [True, True, False, True, False, True, False, False, True, True]
-    judge_2 = [True, True, False, True, False, True, False, False, True, False]  # 9/10 iguais
+    judge_2 = [True, True, False, True, False, True, False, False, True, False]  # 9/10 identical
 
     kappa_high = evaluator.calculate_cohens_kappa(judge_1, judge_2)
     assert kappa_high > 0.70
 
-    # Cenário de desacordo / ruído
+    # Disagreement / noise scenario
     judge_noisy = [not x for x in judge_1]
     kappa_low = evaluator.calculate_cohens_kappa(judge_1, judge_noisy)
     assert kappa_low <= 0.0

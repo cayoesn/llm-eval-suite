@@ -13,9 +13,9 @@ class SyntheticQAPair(BaseModel):
 
 class SyntheticDatasetGenerator:
     """Enterprise Synthetic Data Generation Engine.
-    
-    Gera automaticamente pares de Pergunta/Resposta e Contextos de Teste (Golden Dataset)
-    a partir de documentos brutos para benchmark contínuo de RAG e Agentes.
+
+    Automatically generates Question/Answer pairs and Test Contexts (Golden Dataset)
+    from raw documents for continuous RAG and Agent benchmarking.
     """
 
     def generate_from_raw_text(self, document_text: str, num_samples: int = 3) -> list[SyntheticQAPair]:
@@ -24,11 +24,11 @@ class SyntheticDatasetGenerator:
 
         for i in range(min(num_samples, len(sentences))):
             sentence = sentences[i]
-            question = f"O que é afirmado sobre '{sentence[:20]}...'?"
+            question = f"What is stated about '{sentence[:20]}...'?"
             ground_truth = sentence
-            
-            # Adiciona contexto ruidoso/distrator para simular RAG real
-            distractor = f"Distrator aleatório {random.randint(100, 999)} para teste de precisão de contexto."
+
+            # Add noisy/distractor context to simulate real-world RAG retrieval
+            distractor = f"Random distractor {random.randint(100, 999)} for context precision testing."
             context = [sentence, distractor]
 
             dataset.append(
@@ -44,5 +44,5 @@ class SyntheticDatasetGenerator:
         return dataset
 
 
-# Instância Singleton
+# Singleton instance
 synthetic_generator = SyntheticDatasetGenerator()

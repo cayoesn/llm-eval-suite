@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class EvalObservability:
-    """Rastreamento de Scores de Avaliação no Langfuse."""
+    """Evaluation Score Tracing in Langfuse."""
 
     def __init__(self) -> None:
         self.client = None
@@ -20,14 +20,14 @@ class EvalObservability:
                 secret_key=settings.LANGFUSE_SECRET_KEY,
                 host=settings.LANGFUSE_HOST
             )
-            logger.info("Langfuse Client inicializado no Evaluation Suite.")
+            logger.info("Langfuse client initialized in Evaluation Suite.")
         except Exception as e:
-            logger.warning(f"Langfuse SDK indisponível. Evaluator operando offline: {e}")
+            logger.warning(f"Langfuse SDK unavailable. Evaluator running offline: {e}")
             self.client = None
 
     def log_evaluation_scores(self, test_case_id: str, scores: Dict[str, float]) -> Optional[str]:
         """
-        Grava os scores de avaliação de um caso de teste no Langfuse.
+        Records evaluation scores for a test case in Langfuse.
         """
         if not self.client:
             return None
@@ -48,7 +48,7 @@ class EvalObservability:
                 return getattr(trace, "id", f"trace-{test_case_id}")
             return f"trace-{test_case_id}"
         except Exception as e:
-            logger.error(f"Erro ao registrar scores no Langfuse: {e}")
+            logger.error(f"Failed to log scores to Langfuse: {e}")
             return None
 
 

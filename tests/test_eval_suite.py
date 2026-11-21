@@ -23,24 +23,24 @@ def test_evaluators_unit():
 
     # Test Faithfulness
     f_res = faith_eval.evaluate(
-        generated_answer="O prazo eh 2 a 4 dias uteis.",
-        context="O prazo de entrega eh de 2 a 4 dias uteis para o RJ."
+        generated_answer="The delivery timeframe is 2 to 4 business days.",
+        context="The standard delivery timeframe is 2 to 4 business days for New York."
     )
     assert f_res["score"] >= 0.80
     assert f_res["is_faithful"] is True
 
     # Test Relevance
     r_res = rel_eval.evaluate(
-        question="Qual o prazo de entrega para SP?",
-        generated_answer="O prazo de entrega para SP eh de 2 dias uteis."
+        question="What is the delivery timeframe for Boston?",
+        generated_answer="The delivery timeframe for Boston is 2 business days."
     )
     assert r_res["score"] >= 0.70
 
     # Test G-Eval
     g_res = geval_eval.evaluate(
-        question="Voces aceitam Pix?",
-        generated_answer="Sim! Aceitamos pagamento via Pix.",
-        ground_truth="Sim, aceitamos Pix."
+        question="Do you accept instant bank transfers?",
+        generated_answer="Yes! We accept instant bank transfer payments.",
+        ground_truth="Yes, we accept instant bank transfers."
     )
     assert g_res["score"] >= 0.75
 
@@ -77,7 +77,7 @@ def test_golden_dataset_offline_benchmark(golden_dataset):
         }
         results.append(eval_data)
 
-        # Log scores no Langfuse
+        # Log scores to Langfuse
         eval_obs.log_evaluation_scores(
             test_case_id=item["id"],
             scores={
@@ -102,12 +102,12 @@ def test_golden_dataset_offline_benchmark(golden_dataset):
         )
     }
 
-    # Gera relatórios analíticos em JSON e Markdown
+    # Generate analytical reports in JSON and Markdown
     reports_dir = os.path.join(os.path.dirname(__file__), "..", "reports")
     ReportGenerator.generate_json_report(results, os.path.join(reports_dir, "eval_details.json"))
     ReportGenerator.generate_markdown_report(summary, results, os.path.join(reports_dir, "eval_summary.md"))
 
-    # Validações de SLA para aprovação do teste
-    assert avg_faith >= settings.MIN_FAITHFULNESS_SCORE, f"Faithfulness abaixo do SLA: {avg_faith} < {settings.MIN_FAITHFULNESS_SCORE}"
-    assert avg_rel >= settings.MIN_RELEVANCE_SCORE, f"Relevance abaixo do SLA: {avg_rel} < {settings.MIN_RELEVANCE_SCORE}"
-    assert avg_geval >= settings.MIN_GEVAL_SCORE, f"G-Eval abaixo do SLA: {avg_geval} < {settings.MIN_GEVAL_SCORE}"
+    # SLA validations for test approval
+    assert avg_faith >= settings.MIN_FAITHFULNESS_SCORE, f"Faithfulness below SLA: {avg_faith} < {settings.MIN_FAITHFULNESS_SCORE}"
+    assert avg_rel >= settings.MIN_RELEVANCE_SCORE, f"Relevance below SLA: {avg_rel} < {settings.MIN_RELEVANCE_SCORE}"
+    assert avg_geval >= settings.MIN_GEVAL_SCORE, f"G-Eval below SLA: {avg_geval} < {settings.MIN_GEVAL_SCORE}"
